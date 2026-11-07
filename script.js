@@ -85,10 +85,14 @@ const sections = Array.from(navLinks)
 
 function updateActiveNav() {
   const scrollMid = window.scrollY + window.innerHeight / 3;
-  let current = sections[0];
-  sections.forEach(sec => { if (sec.offsetTop <= scrollMid) current = sec; });
+  let current = null;
+  if (window.scrollY > 150) {
+    sections.forEach(sec => {
+      if (sec && sec.offsetTop <= scrollMid) current = sec;
+    });
+  }
   navLinks.forEach(a => {
-    const isActive = a.getAttribute("href") === "#" + current.id;
+    const isActive = Boolean(current && a.getAttribute("href") === "#" + current.id);
     a.classList.toggle("nav-active", isActive);
   });
 }
