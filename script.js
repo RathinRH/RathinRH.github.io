@@ -95,9 +95,10 @@ function updateActiveNav() {
 window.addEventListener("scroll", updateActiveNav, {passive: true});
 updateActiveNav();
 
-// Project filters — smooth fade transition
+// Project filters — instant filtering with smooth entry animation
 const filterButtons = document.querySelectorAll(".filter-btn");
 const projectCards = document.querySelectorAll(".project-card");
+
 filterButtons.forEach(button => button.addEventListener("click", () => {
   filterButtons.forEach(b => {
     const selected = b === button;
@@ -106,16 +107,15 @@ filterButtons.forEach(button => button.addEventListener("click", () => {
   });
   const filter = button.dataset.filter;
   projectCards.forEach(card => {
-    const show = filter === "all" || card.dataset.category === filter;
-    if (show) {
-      card.style.display = "";
-      requestAnimationFrame(() => card.classList.remove("hidden"));
+    const matches = filter === "all" || card.dataset.category === filter;
+    if (matches) {
+      card.classList.remove("hidden");
+      card.classList.remove("filter-anim");
+      void card.offsetWidth; // Re-trigger smooth CSS entry animation
+      card.classList.add("filter-anim");
     } else {
       card.classList.add("hidden");
-      card.addEventListener("transitionend", function handler() {
-        if (card.classList.contains("hidden")) card.style.display = "none";
-        card.removeEventListener("transitionend", handler);
-      });
+      card.classList.remove("filter-anim");
     }
   });
 }));
@@ -164,9 +164,10 @@ const modal = document.querySelector("#project-modal");
 const modalClose = document.querySelector(".modal-close");
 const modalGithub = document.querySelector("#modal-github");
 const modalDownload = document.querySelector("#modal-download");
-document.querySelectorAll("[data-open]").forEach(button => button.addEventListener("click", () => {
-  const data = projects[button.dataset.open];
-  if (!data) return;
+
+function openProjectModal(key) {
+  const data = projects[key];
+  if (!data || !modal) return;
   document.querySelector("#modal-kicker").textContent = data.kicker;
   document.querySelector("#modal-title").textContent = data.title;
   document.querySelector("#modal-summary").textContent = data.summary;
@@ -190,7 +191,23 @@ document.querySelectorAll("[data-open]").forEach(button => button.addEventListen
   }));
   modal.showModal();
   document.body.classList.add("modal-open");
-}));
+}
+
+document.querySelectorAll("[data-open]").forEach(button => {
+  button.addEventListener("click", e => {
+    e.stopPropagation();
+    openProjectModal(button.dataset.open);
+  });
+});
+
+// Allow clicking anywhere on the project card to open case study
+projectCards.forEach(card => {
+  card.addEventListener("click", e => {
+    if (e.target.closest("a")) return; // Let direct repo links navigate
+    const projectKey = card.dataset.project;
+    if (projectKey) openProjectModal(projectKey);
+  });
+});
 function closeModal(){modal.close();document.body.classList.remove("modal-open");}
 modalClose.addEventListener("click", closeModal);
 modal.addEventListener("click", event => { if (event.target === modal) closeModal(); });
