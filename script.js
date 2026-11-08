@@ -35,6 +35,12 @@ if ("IntersectionObserver" in window && !reduceMotion) {
   revealEls.forEach(el => el.classList.add("visible"));
 }
 
+// Handle SVG packet animations with accessibility and motion controls
+const enterpriseSvg = document.getElementById("enterprise-svg");
+if (reduceMotion && enterpriseSvg && typeof enterpriseSvg.pauseAnimations === "function") {
+  enterpriseSvg.pauseAnimations();
+}
+
 // Scroll progress & Smart Navbar (Hide on scroll down, slim on scroll, reveal on scroll up)
 const topbar = document.querySelector(".topbar");
 const progressBar = document.querySelector(".scroll-progress");
@@ -225,6 +231,10 @@ motionButton.addEventListener("click", () => {
   motionButton.querySelector("span").textContent = paused ? "▶" : "Ⅱ";
   motionButton.title = paused ? "Resume decorative motion" : "Pause decorative motion";
   if (!paused && !reduceMotion) requestAnimationFrame(drawNetwork);
+  if (enterpriseSvg && typeof enterpriseSvg.pauseAnimations === "function") {
+    if (paused) enterpriseSvg.pauseAnimations();
+    else if (!reduceMotion) enterpriseSvg.unpauseAnimations();
+  }
 });
 
 // Premium interactive custom cursor (Desktop pointer:fine only)
@@ -276,21 +286,90 @@ if (window.matchMedia("(pointer:fine)").matches && !reduceMotion && dot && ring)
   requestAnimationFrame(renderCursor);
 
   // Interactive hover states on all interactive elements
-  const interactiveSelector = "a, button, [role='button'], input, .project-card, .cert-card, .filter-btn, .round-link, .modal-close, .modal-pkt-btn, .card-ext-link";
+  const interactiveSelector = "a, button, [role='button'], input, .project-card, .cert-card, .filter-btn, .round-link, .modal-close, .modal-pkt-btn, .card-ext-link, .manifesto-pill";
   document.addEventListener("mouseover", e => {
     if (e.target.closest(interactiveSelector)) {
       document.body.classList.add("cursor-hover");
+    }
+    if (e.target.closest(".manifesto")) {
+      document.body.classList.add("cursor-in-manifesto");
     }
   });
   document.addEventListener("mouseout", e => {
     if (e.target.closest(interactiveSelector)) {
       document.body.classList.remove("cursor-hover");
     }
+    if (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest(".manifesto")) {
+      document.body.classList.remove("cursor-in-manifesto");
+    }
   });
 
   // Click spring bounce
   window.addEventListener("mousedown", () => document.body.classList.add("cursor-clicking"));
   window.addEventListener("mouseup", () => document.body.classList.remove("cursor-clicking"));
+}
+
+// ── Hero Interactive Spotlight Reveal (Profile in Darkness) ───────────
+const heroSpotlight = document.querySelector("#hero-spotlight");
+const heroSection = document.querySelector(".hero");
+
+if (heroSpotlight && window.matchMedia("(pointer:fine)").matches) {
+  let isHovering = false;
+  let targetX = -999, targetY = -999;
+  let currentX = -999, currentY = -999;
+
+  function updateSpotlight() {
+    if (isHovering) {
+      currentX += (targetX - currentX) * 0.22;
+      currentY += (targetY - currentY) * 0.22;
+      heroSpotlight.style.setProperty("--spot-x", `${currentX.toFixed(1)}px`);
+      heroSpotlight.style.setProperty("--spot-y", `${currentY.toFixed(1)}px`);
+    }
+    requestAnimationFrame(updateSpotlight);
+  }
+  requestAnimationFrame(updateSpotlight);
+
+  if (heroSection) {
+    heroSection.addEventListener("pointermove", (e) => {
+      const rect = heroSpotlight.getBoundingClientRect();
+      const pad = 35;
+      const isInside = (
+        e.clientX >= rect.left - pad &&
+        e.clientX <= rect.right + pad &&
+        e.clientY >= rect.top - pad &&
+        e.clientY <= rect.bottom + pad
+      );
+
+      if (isInside) {
+        const relX = e.clientX - rect.left;
+        const relY = e.clientY - rect.top;
+        targetX = relX;
+        targetY = relY;
+
+        if (!isHovering) {
+          isHovering = true;
+          currentX = relX;
+          currentY = relY;
+          heroSpotlight.style.setProperty("--spot-x", `${currentX.toFixed(1)}px`);
+          heroSpotlight.style.setProperty("--spot-y", `${currentY.toFixed(1)}px`);
+          heroSpotlight.classList.add("active");
+          document.body.classList.add("cursor-in-spotlight");
+        }
+      } else if (isHovering) {
+        isHovering = false;
+        heroSpotlight.classList.remove("active");
+        document.body.classList.remove("cursor-in-spotlight");
+      }
+    }, { passive: true });
+
+    heroSection.addEventListener("pointerleave", () => {
+      if (isHovering) {
+        isHovering = false;
+        heroSpotlight.classList.remove("active");
+        document.body.classList.remove("cursor-in-spotlight");
+      }
+    });
+  }
 }
 
 // Interactive canvas network. Nodes drift gently and respond to pointer position.

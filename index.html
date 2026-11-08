@@ -37,7 +37,14 @@
   <div class="noise"></div>
   <div class="cursor-glow" aria-hidden="true"></div>
   <div class="cursor-dot" aria-hidden="true"></div>
-  <div class="cursor-ring" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true">
+    <div class="reticle-cross">
+      <span class="reticle-tick tick-t"></span>
+      <span class="reticle-tick tick-b"></span>
+      <span class="reticle-tick tick-l"></span>
+      <span class="reticle-tick tick-r"></span>
+    </div>
+  </div>
   <header class="topbar">
     <a class="wordmark" href="#home" aria-label="Go to home"><span class="wordmark-badge">R</span><span class="wordmark-name">RATHINDRA</span></a>
     <nav class="main-nav" id="primary-navigation" aria-label="Main navigation">
@@ -51,6 +58,12 @@
     <section class="hero" id="home">
       <canvas id="network-canvas" aria-hidden="true"></canvas>
       <div class="hero-grid"></div>
+      
+      <!-- Interactive Flashlight Spotlight Image Reveal -->
+      <div class="hero-spotlight" id="hero-spotlight" aria-label="Interactive profile reveal">
+        <div class="spotlight-image-layer" style="background-image: url('profile.png');"></div>
+      </div>
+
       <div class="hero-content">
         <div class="eyebrow reveal"><span class="eyebrow-line"></span> NETWORK ENGINEER <span class="eyebrow-sep">/</span> TECHNOLOGY BUILDER</div>
         <p class="hero-pretitle reveal delay-1">Curious by nature. Technical by design.</p>
@@ -105,7 +118,10 @@
             <div class="timeline-item">
               <div class="timeline-dot"></div>
               <div class="timeline-body">
-                <span class="mono timeline-year">2024 — 2026 · CGPA: 8.65</span>
+                <div class="timeline-meta mono">
+                  <span class="timeline-year">2024 — 2026</span>
+                  <span class="timeline-badge">CGPA: 8.65</span>
+                </div>
                 <h3>MCA in Computer Applications</h3>
                 <p class="timeline-org">REVA University · Bengaluru</p>
                 <p>Advanced studies in computer applications, distributed networking systems, full-stack application development, and systems architecture.</p>
@@ -114,7 +130,10 @@
             <div class="timeline-item">
               <div class="timeline-dot"></div>
               <div class="timeline-body">
-                <span class="mono timeline-year">2021 — 2024 · CGPA: 8.09</span>
+                <div class="timeline-meta mono">
+                  <span class="timeline-year">2021 — 2024</span>
+                  <span class="timeline-badge">CGPA: 8.09</span>
+                </div>
                 <h3>B.Sc in Mathematics & Computer Science</h3>
                 <p class="timeline-org">Rani Channamma University · Belagavi</p>
                 <p>Rigorous foundation in discrete mathematics, analytical problem solving, data structures, algorithm design, and core computing fundamentals.</p>
@@ -137,9 +156,221 @@
       <div class="project-grid">
         <article class="project-card project-featured reveal" data-category="network" data-project="enterprise">
           <div class="project-art art-enterprise"><div class="art-topline mono"><span>NETWORK SYSTEMS / 001</span><span>ENTERPRISE</span></div><div class="enterprise-map">
-            <div class="map-cloud">INTERNET</div><div class="map-core">HQ<span>ROUTER</span></div><div class="map-branch">BRANCH<span>ROUTER</span></div><div class="map-switch sw1">L3 SWITCH</div><div class="map-switch sw2">ACCESS</div><div class="map-server">INTERNAL<br>SERVICES</div><div class="map-client">ENDPOINTS</div>
-            <svg viewBox="0 0 620 330" preserveAspectRatio="none"><path d="M310 42 L220 110 L390 110 M220 110 L145 205 L145 260 M390 110 L485 205 L485 260 M220 110 L310 205 L310 260" /><path class="flow-path" d="M310 42 L220 110 L390 110 L485 205 L485 260" /></svg>
-            <div class="map-packet p1"></div><div class="map-packet p2"></div><div class="map-packet p3"></div>
+            <svg viewBox="0 0 620 310" preserveAspectRatio="xMidYMid meet" id="enterprise-svg" class="enterprise-svg" aria-label="Enterprise Hybrid Network Topology">
+              <defs>
+                <filter id="pkt-glow" x="-100%" y="-100%" width="300%" height="300%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <filter id="core-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+
+                <!-- Dedicated Port-to-Port Cable Vector Tracks (Strictly on the wire - never inside devices) -->
+                <path id="wire-inet-hq" d="M 310 48 L 185 86" />
+                <path id="wire-hq-branch" d="M 235 112 L 385 112" />
+                <path id="wire-branch-hq" d="M 385 112 L 235 112" />
+                <path id="wire-hq-l3" d="M 155 138 L 135 200" />
+                <path id="wire-hq-svc" d="M 215 138 L 265 215" />
+                <path id="wire-branch-acc" d="M 455 138 L 465 180" />
+                <path id="wire-acc-end" d="M 475 218 L 475 250" />
+              </defs>
+
+              <!-- Static Cable Links -->
+              <g class="net-cables">
+                <path class="net-line" d="M 310 48 L 185 86" />
+                <path class="net-line" d="M 235 112 L 385 112" />
+                <path class="net-line" d="M 155 138 L 135 200" />
+                <path class="net-line" d="M 215 138 L 265 215" />
+                <path class="net-line" d="M 455 138 L 465 180" />
+                <path class="net-line" d="M 475 218 L 475 250" />
+                <path class="net-line" d="M 120 240 L 120 262" />
+              </g>
+
+              <!-- Animated Active Dash Stream (Strictly on the wire - between ports only) -->
+              <g class="flow-streams">
+                <path class="flow-path" d="M 310 48 L 185 86" />
+                <path class="flow-path" d="M 235 112 L 385 112" />
+                <path class="flow-path" d="M 155 138 L 135 200" />
+                <path class="flow-path" d="M 215 138 L 265 215" />
+                <path class="flow-path" d="M 455 138 L 465 180" />
+                <path class="flow-path" d="M 475 218 L 475 250" />
+              </g>
+
+              <!-- Data Packets in Flight (Strictly on wire: fade-in at source port, fade-out at destination port) -->
+              <g class="packet-layer" filter="url(#pkt-glow)">
+                <!-- 01. Internet -> HQ (Inbound Traffic A) -->
+                <g class="packet">
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.18;0.82;1" dur="2.4s" begin="0s" repeatCount="indefinite" />
+                  <circle r="6" fill="var(--lime)" opacity="0.35">
+                    <animateMotion dur="2.4s" begin="0s" repeatCount="indefinite"><mpath href="#wire-inet-hq" /></animateMotion>
+                  </circle>
+                  <circle r="3.2" fill="#eeff88">
+                    <animateMotion dur="2.4s" begin="0s" repeatCount="indefinite"><mpath href="#wire-inet-hq" /></animateMotion>
+                  </circle>
+                </g>
+
+                <!-- 02. Internet -> HQ (Inbound Traffic B - Staggered) -->
+                <g class="packet">
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.18;0.82;1" dur="2.4s" begin="-1.2s" repeatCount="indefinite" />
+                  <circle r="6" fill="var(--lime)" opacity="0.35">
+                    <animateMotion dur="2.4s" begin="-1.2s" repeatCount="indefinite"><mpath href="#wire-inet-hq" /></animateMotion>
+                  </circle>
+                  <circle r="3.2" fill="#eeff88">
+                    <animateMotion dur="2.4s" begin="-1.2s" repeatCount="indefinite"><mpath href="#wire-inet-hq" /></animateMotion>
+                  </circle>
+                </g>
+
+                <!-- 03. HQ -> Branch (WAN Backbone Tunnel A) -->
+                <g class="packet">
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="2.6s" begin="0s" repeatCount="indefinite" />
+                  <circle r="6.5" fill="var(--lime)" opacity="0.4">
+                    <animateMotion dur="2.6s" begin="0s" repeatCount="indefinite"><mpath href="#wire-hq-branch" /></animateMotion>
+                  </circle>
+                  <circle r="3.5" fill="#eeff88">
+                    <animateMotion dur="2.6s" begin="0s" repeatCount="indefinite"><mpath href="#wire-hq-branch" /></animateMotion>
+                  </circle>
+                </g>
+
+                <!-- 04. HQ -> Branch (WAN Backbone Tunnel B - Staggered) -->
+                <g class="packet">
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="2.6s" begin="-1.3s" repeatCount="indefinite" />
+                  <circle r="6.5" fill="var(--lime)" opacity="0.4">
+                    <animateMotion dur="2.6s" begin="-1.3s" repeatCount="indefinite"><mpath href="#wire-hq-branch" /></animateMotion>
+                  </circle>
+                  <circle r="3.5" fill="#eeff88">
+                    <animateMotion dur="2.6s" begin="-1.3s" repeatCount="indefinite"><mpath href="#wire-hq-branch" /></animateMotion>
+                  </circle>
+                </g>
+
+                <!-- 05. Branch -> HQ (Return Telemetry Heartbeat) -->
+                <g class="packet">
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="2.8s" begin="-0.7s" repeatCount="indefinite" />
+                  <circle r="5.5" fill="var(--lime)" opacity="0.3">
+                    <animateMotion dur="2.8s" begin="-0.7s" repeatCount="indefinite"><mpath href="#wire-branch-hq" /></animateMotion>
+                  </circle>
+                  <circle r="3" fill="#eeff88">
+                    <animateMotion dur="2.8s" begin="-0.7s" repeatCount="indefinite"><mpath href="#wire-branch-hq" /></animateMotion>
+                  </circle>
+                </g>
+
+                <!-- 06. HQ -> L3 Switch (Campus Core Flow) -->
+                <g class="packet">
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.2;0.8;1" dur="1.9s" begin="-0.5s" repeatCount="indefinite" />
+                  <circle r="6" fill="var(--lime)" opacity="0.35">
+                    <animateMotion dur="1.9s" begin="-0.5s" repeatCount="indefinite"><mpath href="#wire-hq-l3" /></animateMotion>
+                  </circle>
+                  <circle r="3.2" fill="#eeff88">
+                    <animateMotion dur="1.9s" begin="-0.5s" repeatCount="indefinite"><mpath href="#wire-hq-l3" /></animateMotion>
+                  </circle>
+                </g>
+
+                <!-- 07. HQ -> Internal Services (Datacenter Query) -->
+                <g class="packet">
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.18;0.82;1" dur="2.0s" begin="-0.9s" repeatCount="indefinite" />
+                  <circle r="6" fill="var(--lime)" opacity="0.35">
+                    <animateMotion dur="2.0s" begin="-0.9s" repeatCount="indefinite"><mpath href="#wire-hq-svc" /></animateMotion>
+                  </circle>
+                  <circle r="3.2" fill="#eeff88">
+                    <animateMotion dur="2.0s" begin="-0.9s" repeatCount="indefinite"><mpath href="#wire-hq-svc" /></animateMotion>
+                  </circle>
+                </g>
+
+                <!-- 08. Branch -> Access Switch (Branch Distribution) -->
+                <g class="packet">
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.2;0.8;1" dur="1.7s" begin="-0.3s" repeatCount="indefinite" />
+                  <circle r="6" fill="var(--lime)" opacity="0.35">
+                    <animateMotion dur="1.7s" begin="-0.3s" repeatCount="indefinite"><mpath href="#wire-branch-acc" /></animateMotion>
+                  </circle>
+                  <circle r="3.2" fill="#eeff88">
+                    <animateMotion dur="1.7s" begin="-0.3s" repeatCount="indefinite"><mpath href="#wire-branch-acc" /></animateMotion>
+                  </circle>
+                </g>
+
+                <!-- 09. Access -> Endpoints (Branch User Delivery) -->
+                <g class="packet">
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.22;0.78;1" dur="1.5s" begin="-0.7s" repeatCount="indefinite" />
+                  <circle r="5.5" fill="var(--lime)" opacity="0.35">
+                    <animateMotion dur="1.5" begin="-0.7s" repeatCount="indefinite"><mpath href="#wire-acc-end" /></animateMotion>
+                  </circle>
+                  <circle r="3" fill="#eeff88">
+                    <animateMotion dur="1.5" begin="-0.7s" repeatCount="indefinite"><mpath href="#wire-acc-end" /></animateMotion>
+                  </circle>
+                </g>
+              </g>
+
+              <!-- Interface Port Connector Dots (On wire terminations) -->
+              <g class="port-dots">
+                <circle cx="310" cy="48" r="2.2" class="port-dot" />
+                <circle cx="185" cy="86" r="2.2" class="port-dot" />
+                <circle cx="235" cy="112" r="2.2" class="port-dot" />
+                <circle cx="385" cy="112" r="2.2" class="port-dot" />
+                <circle cx="155" cy="138" r="2.2" class="port-dot" />
+                <circle cx="135" cy="200" r="2.2" class="port-dot" />
+                <circle cx="215" cy="138" r="2.2" class="port-dot" />
+                <circle cx="265" cy="215" r="2.2" class="port-dot" />
+                <circle cx="455" cy="138" r="2.2" class="port-dot" />
+                <circle cx="465" cy="180" r="2.2" class="port-dot" />
+                <circle cx="475" cy="218" r="2.2" class="port-dot" />
+                <circle cx="475" cy="250" r="2.2" class="port-dot" />
+              </g>
+
+              <!-- WAN Link Protocol Label -->
+              <text x="310" y="103" class="link-label">OSPF · GRE TUNNEL</text>
+
+              <!-- Network Devices (Layered in FRONT of all wires and packets - perfectly solid & clean) -->
+              <!-- 01. INTERNET Cloud / Gateway -->
+              <g class="node-group">
+                <rect x="250" y="14" width="120" height="34" rx="17" class="net-node node-pill" />
+                <text x="310" y="32" class="node-txt">INTERNET</text>
+              </g>
+
+              <!-- 02. HQ ROUTER (Core Gateway) -->
+              <g class="node-group">
+                <rect x="135" y="86" width="100" height="52" rx="4" class="net-node node-core" filter="url(#core-glow)" />
+                <text x="185" y="105" class="node-txt node-bold">HQ</text>
+                <text x="185" y="123" class="node-sub">ROUTER</text>
+              </g>
+
+              <!-- 03. BRANCH ROUTER -->
+              <g class="node-group">
+                <rect x="385" y="86" width="100" height="52" rx="4" class="net-node" />
+                <text x="435" y="105" class="node-txt node-bold">BRANCH</text>
+                <text x="435" y="123" class="node-sub">ROUTER</text>
+              </g>
+
+              <!-- 04. L3 SWITCH (HQ Campus Core) -->
+              <g class="node-group">
+                <rect x="70" y="200" width="100" height="40" rx="4" class="net-node" />
+                <text x="120" y="221" class="node-txt">L3 SWITCH</text>
+              </g>
+
+              <!-- 05. INTERNAL SERVICES (HQ Datacenter / DMZ) -->
+              <g class="node-group">
+                <rect x="225" y="215" width="115" height="46" rx="4" class="net-node" />
+                <text x="282" y="235" class="node-txt">INTERNAL</text>
+                <text x="282" y="250" class="node-sub">SERVICES</text>
+              </g>
+
+              <!-- 06. ACCESS SWITCH (Branch L2) -->
+              <g class="node-group">
+                <rect x="430" y="180" width="90" height="38" rx="4" class="net-node" />
+                <text x="475" y="200" class="node-txt">ACCESS</text>
+              </g>
+
+              <!-- 07. ENDPOINTS (Branch Users) -->
+              <g class="node-group">
+                <rect x="420" y="250" width="110" height="38" rx="4" class="net-node" />
+                <text x="475" y="270" class="node-txt">ENDPOINTS</text>
+              </g>
+            </svg>
           </div><div class="art-bottomline mono"><span>HQ ↔ BRANCH</span><span>ROUTED CONNECTIVITY <b>↗</b></span></div></div>
           <div class="project-info"><div class="project-meta mono"><span>01 / NETWORK ENGINEERING</span><span class="status-tag">FLAGSHIP</span></div><h3>Enterprise Hybrid<br>Network Architecture</h3><p>Designed a multi-site enterprise network connecting headquarters, branch and ISP segments. The project explores segmentation, dynamic routing, shared services and secure administration.</p><div class="tag-row"><span>OSPF</span><span>VLAN</span><span>DHCP / DNS</span><span>NAT / PAT</span><span>ACL</span><span>GRE</span></div><div class="project-card-actions"><button class="project-open" data-open="enterprise">EXPLORE CASE STUDY <b>↗</b></button><a class="card-ext-link mono" href="https://github.com/RathinRH/Enterprise-Hybrid-Network-Architecture" target="_blank" rel="noreferrer">REPO ↗</a></div></div>
         </article>
@@ -162,8 +393,31 @@
       <p class="project-footnote mono">PROJECT DETAILS ARE PRESENTED AS IMPLEMENTATION SUMMARIES. TEST RESULTS AND LIVE DEMOS WILL BE ADDED WITH VERIFIED EVIDENCE.</p>
     </section>
 
-    <section class="manifesto">
-      <div class="manifesto-inner reveal"><span class="mono">A PRINCIPLE I BUILD BY</span><h2>DON'T JUST MAKE IT<br><span class="outline-text">CONNECT.</span> MAKE IT<br><span class="lime-text">MAKE SENSE.</span></h2><div class="manifesto-foot"><span>UNDERSTAND THE SYSTEM.</span><span>DESIGN THE SOLUTION.</span><span>TEST THE RESULT.</span></div></div>
+    <section class="manifesto" id="manifesto">
+      <div class="manifesto-grid-bg" aria-hidden="true"></div>
+      <div class="manifesto-star" aria-hidden="true">✳</div>
+      
+      <div class="manifesto-marquee mono" aria-hidden="true">
+        <div class="manifesto-track">
+          <span>PACKETS IN FLIGHT</span><i>✳</i><span>ARCHITECTURE WITH INTENT</span><i>✳</i><span>ROUTING & RESILIENCE</span><i>✳</i><span>AUTOMATION FIRST</span><i>✳</i><span>PACKETS IN FLIGHT</span><i>✳</i><span>ARCHITECTURE WITH INTENT</span><i>✳</i><span>ROUTING & RESILIENCE</span><i>✳</i><span>AUTOMATION FIRST</span><i>✳</i>
+        </div>
+      </div>
+
+      <div class="manifesto-inner reveal">
+        <div class="manifesto-eyebrow mono">
+          <span class="manifesto-pulse"></span>
+          <span>A PRINCIPLE I BUILD BY</span>
+          <span class="manifesto-tag">// CORE PHILOSOPHY</span>
+        </div>
+        <h2>DON'T JUST MAKE IT<br><span class="outline-text">CONNECT.</span> MAKE IT<br><span class="manifesto-badge">MAKE SENSE.</span></h2>
+        <div class="manifesto-foot">
+          <div class="manifesto-pill mono"><span class="pill-num">01</span><span>UNDERSTAND THE SYSTEM</span></div>
+          <span class="manifesto-arrow">→</span>
+          <div class="manifesto-pill mono"><span class="pill-num">02</span><span>DESIGN THE SOLUTION</span></div>
+          <span class="manifesto-arrow">→</span>
+          <div class="manifesto-pill mono"><span class="pill-num">03</span><span>TEST THE RESULT</span></div>
+        </div>
+      </div>
     </section>
 
     <section class="contact section-pad" id="contact">
@@ -172,7 +426,7 @@
               <a class="contact-button contact-button-secondary" href="resume.pdf" download>DOWNLOAD CV <span>↓</span></a></div><div class="contact-links reveal delay-1"><a href="https://www.linkedin.com/in/rathindra-halder-3189372b9" target="_blank" rel="noreferrer"><span>LINKEDIN</span><b>↗</b></a><a href="https://github.com/RathinRH" target="_blank" rel="noreferrer"><span>GITHUB</span><b>↗</b></a><a href="tel:+918217675179"><span>+91 8217675179</span><b>↗</b></a><button class="contact-copy-email" type="button" data-email="rathindraranjit@gmail.com" title="Click to copy email"><span>rathindraranjit@gmail.com</span><b class="mono">COPY ⎘</b></button><a href="#home"><span>BACK TO TOP</span><b>↑</b></a></div></div>
     </section>
   </main>
-  <footer class="footer"><a class="wordmark" href="#home"><span class="wordmark-icon">R</span><span class="wordmark-name">RATHINDRA</span></a><span class="mono">DESIGNED WITH CURIOSITY · BUILT WITH INTENT</span><span class="mono">© <span id="year"></span></span></footer>
+  <footer class="footer"><a class="wordmark" href="#home"><span class="wordmark-icon">R</span><span class="wordmark-name">RATHINDRA</span></a><span class="mono footer-center">DESIGNED &amp; BUILT BY <span class="footer-name">RATHINDRA HALDER</span></span><span class="mono">© <span id="year"></span></span></footer>
 
   <dialog class="project-modal" id="project-modal" aria-labelledby="modal-title"><button class="modal-close" aria-label="Close project details">×</button><div class="modal-content"><span class="mono modal-kicker" id="modal-kicker"></span><h2 id="modal-title"></h2><p id="modal-summary"></p><div class="modal-columns"><div><span class="mono">THE IDEA</span><p id="modal-idea"></p></div><div><span class="mono">TECHNOLOGY</span><div class="modal-tags" id="modal-tags"></div></div></div><div class="modal-bottom"><span class="mono" id="modal-note"></span><div class="modal-actions"><a href="#" id="modal-download" class="modal-link modal-pkt-btn" target="_blank" rel="noreferrer">TOPOLOGY / PKT ⤓</a><a href="#" id="modal-github" class="modal-link" target="_blank" rel="noreferrer">GITHUB ↗</a><a href="#contact" class="modal-contact">DISCUSS THIS ↗</a></div></div></div></dialog>
 
